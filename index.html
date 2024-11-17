@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1A2B猜數字遊戲</title>
+    <script src="scripts/jquery-3.7.1.min.js"></script> <!-- 引入jQuery -->
 </head>
 <body>
     <section class="guessNumberGame">
@@ -20,7 +21,7 @@
         </section>
         <section class="guessArea">
             <input type="number" id="guessNumber"> <!-- 由js來驗證輸入格式 -->
-            <input type="submit" value="送出答案！">
+            <input type="submit" id="submit" value="送出答案！">
         </section>
         <section class="resultArea">
             <p>猜測結果：</p>

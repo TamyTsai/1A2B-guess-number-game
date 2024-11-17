@@ -26,8 +26,7 @@ function checkGuess(answer, guess) {
 
     // 檢查 A
     for (let i = 0; i < 4; i++) {
-        if (guess[i] === answer[i]) { // 如果 猜測陣列中 的第i個元素 與 答案陣列中 的第i個元素 相同
-        // === 連資料型態都比較
+        if (guess[i] == answer[i]) { // 如果 猜測陣列中 的第i個元素 與 答案陣列中 的第i個元素 相等
             A++; // A的值就+1
             usedInAnswer.push(i); // 在usedInAnswer陣列中加入 被猜中的位置之索引值
             // 範例 usedInAnswer=[1]
@@ -43,7 +42,7 @@ function checkGuess(answer, guess) {
             // ->不會檢查陣列中索引值為1的元素
             // i = 0, 2, 3
             for (let j = 0; j < 4; j++) {
-                if (!usedInAnswer.includes(j) && guess[i] === answer[j]) {
+                if (!usedInAnswer.includes(j) && guess[i] == answer[j]) {
                 // 索引值非為j 且 猜測陣列中 的第i個元素 與 答案陣列中 的第j個元素 相同
                 // 範例：跑第一次內迴圈j=0時，因為usedInAnswer=[1]，0並不存在於usedInAnswer陣列中，所以「!usedInAnswer.includes(j)」回傳true
                     // guess[0] 為 2，answer[0]為3，不相同，故回傳false，不執行以下程式碼
@@ -69,45 +68,63 @@ function checkGuess(answer, guess) {
     // 範例：1, 2
 }
 
+var answer = generateAnswer(); //  呼叫 生成一組不重複的四位數字 函式，並將函式回傳之答案存入常數answer中
+// 範例 answer = "2584"
+console.log("遊戲開始！系统已經生成一組四位不重複的數字。");
+console.log(answer);
+
+// 初始化函式
+// function init() {
+//     var answer = generateAnswer(); //  呼叫 生成一組不重複的四位數字 函式，並將函式回傳之答案存入常數answer中
+//     // 範例 answer = "2584"
+//     console.log("遊戲開始！系统已經生成一組四位不重複的數字。");
+//     console.log(answer);
+// }
+
+var attempts = 0; // 猜測次數
+var guessedCorrectly = false; // 猜測是否正確
+
 // 主遊戲邏輯
 // 主遊戲進行 函式
 function playGame() {
-    const answer = generateAnswer(); //  呼叫 生成一組不重複的四位數字 函式，並將函式回傳之答案存入常數answer中
-    // 範例 answer = "2584"
-    console.log("遊戲開始！系统已經生成一組四位不重複的數字。");
 
-    let attempts = 0; // 猜測次數
-    let guessedCorrectly = false; // 猜測是否正確
+    const guess = $('#guessNumber').val(); // 用常數guess儲存使用者輸入的猜測
+    console.log(guess);
 
-    while (!guessedCorrectly) { // 當猜測不正確，就重複執行下列程式碼
+    const { A, B } = checkGuess(answer, guess); // 將幾A幾B存入A及B常數
+    // 範例 A=1 B=2
 
-        const guess = prompt("請輸入一個四位不重複的數字："); // 用常數guess儲存使用者輸入的猜測
-
-        // 檢查輸入的格式是否正確（由 4 个数字组成的字符串）
-        if (!/^\d{4}$/.test(guess)) { // 若不符合格式
-        // 正則表達式
-            // ^：表示字串的開頭
-            // \d：表示一個數字字串（0-9）
-            // {4}：表示匹配前面的模式（\d）出現4次
-            // $：表示字串的結尾
-        // test() 是 JavaScript 中正则表达式对象的方法，用于测试一个字符串是否匹配给定的正则表达式。如果匹配成功，返回 true；否则返回 false。
-            console.log("輸入無效，請輸入一個四位數字。");
-            continue; // 不執行下面的程式碼，回到迴圈開頭直接開始下一次迴圈
-        }
-
-        const { A, B } = checkGuess(answer, guess); // 將幾A幾B存入A及B常數
-        // 範例 A=1 B=2
-
+    if (/^\d{4}$/.test(guess)) { //只計算輸入符合格式（由 4 个数字组成的字符串）的猜測次數
         attempts++; // 猜測次數+1
+    }
+    // 正則表達式
+        // ^：表示字串的開頭
+        // \d：表示一個數字字串（0-9）
+        // {4}：表示匹配前面的模式（\d）出現4次
+        // $：表示字串的結尾
+    // test() 是 JavaScript 中正则表达式对象的方法，用于测试一个字符串是否匹配给定的正则表达式。如果匹配成功，返回 true；否则返回 false。
 
+    if (guess != answer && /^\d{4}$/.test(guess)) {
         console.log(`猜測：${guess} | 结果：${A}A${B}B`); // ES6字串與變數串接
-
-        if (A === 4) { // 如果4個數字的數字與位置全對
-            guessedCorrectly = true; // 將guessedCorrectly變數值改為true（即跳出迴圈）
-            console.log(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
-        }
+        $('#result').html(`猜測：${guess} | 结果：${A}A${B}B`);
+    } else if (guess == answer) {
+        guessedCorrectly = true; // 將guessedCorrectly變數值改為true
+        console.log(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
+        $('#result').html(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
+    } else {
+        console.log("輸入無效，請輸入一個四位數字。");
+        $('#result').html("輸入無效，請輸入一個四位數字。");
     }
 }
 
-// 呼叫 主遊戲進行 函式
-// playGame();
+// 等DOM元素都載入後，再進行動作
+$(document).ready(() => { // ES6箭頭函式
+        // init();
+        $('#submit').click(evt => {
+            evt.preventDefault();
+            console.log('按到了');
+            playGame();
+        })
+    }
+);
+
