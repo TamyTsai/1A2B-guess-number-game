@@ -110,4 +110,4 @@ function playGame() {
 }
 
 // 呼叫 主遊戲進行 函式
-playGame();
+// playGame();

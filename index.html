@@ -6,6 +6,27 @@
     <title>1A2B猜數字遊戲</title>
 </head>
 <body>
+    <section class="guessNumberGame">
+        <section class="title">
+            <p>1A2B猜數字遊戲</p>
+        </section>
+        <section class="instruction">
+            <p>遊戲規則</p>
+            <ul>
+                <li>遊戲中隨機產生一組四位不重複的數字為謎底，玩家猜中謎底即為獲勝</li>
+                <li>玩家每猜一個數，遊戲就會根據猜測結果給出提示，提示以XAYB形式呈現，直到猜中為止</li>
+                <li>其中X表示數字正確且位置正確的數的個數，而Y表示數字正確但位置不對的數的個數。</li>
+            </ul>
+        </section>
+        <section class="guessArea">
+            <input type="number" id="guessNumber"> <!-- 由js來驗證輸入格式 -->
+            <input type="submit" value="送出答案！">
+        </section>
+        <section class="resultArea">
+            <p>猜測結果：</p>
+            <p id="result"></p>
+        </section>
+    </section>
     <script src="scripts/script.js"></script> <!-- 引入自己寫的js -->
 </body>
 </html>
