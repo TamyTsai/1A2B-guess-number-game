@@ -4,28 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1A2B猜數字遊戲</title>
+    <script src="https://cdn.tailwindcss.com"></script> <!-- 透過cdn引入Tailwind css -->
+    <link rel="stylesheet" href="styles/style.css"> <!-- 引入自己寫的css -->
     <script src="scripts/jquery-3.7.1.min.js"></script> <!-- 引入jQuery -->
 </head>
 <body>
-    <section class="guessNumberGame">
+    <section class="guessNumberGame w-96 mr-auto ml-auto mt-3 p-3 bg-sky-400 rounded-lg shadow-xl">
         <section class="title">
-            <p>1A2B猜數字遊戲</p>
+            <p class="text-center text-2xl font-bold">1A2B猜數字遊戲</p>
         </section>
-        <section class="instruction">
-            <p>遊戲規則</p>
-            <ul>
+        <section class="instruction bg-sky-200 my-2 p-2 rounded-md">
+            <p class="text-center font-semibold text-xl">遊戲規則</p>
+            <ul class="list-disc ml-4">
                 <li>遊戲中隨機產生一組四位不重複的數字為謎底，玩家猜中謎底即為獲勝</li>
                 <li>玩家每猜一個數，遊戲就會根據猜測結果給出提示，提示以XAYB形式呈現，直到猜中為止</li>
                 <li>其中X表示數字正確且位置正確的數的個數，而Y表示數字正確但位置不對的數的個數。</li>
             </ul>
         </section>
-        <section class="guessArea">
+        <section class="guessArea text-center">
             <input type="number" id="guessNumber"> <!-- 由js來驗證輸入格式 -->
-            <input type="submit" id="submit" value="送出答案！">
+            <br>
+            <input type="submit" id="submit" value="送出答案！" class="my-2 p-1 bg-yellow-300 text-xl rounded-md">
         </section>
         <section class="resultArea">
-            <p>猜測結果：</p>
-            <p id="result"></p>
+            <p class="text-xl text-center">猜測結果：</p>
+            <p id="result" class="text-center m-1"></p>
         </section>
     </section>
     <script src="scripts/script.js"></script> <!-- 引入自己寫的js -->
