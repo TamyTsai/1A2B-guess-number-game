@@ -83,6 +83,9 @@ console.log(answer);
 
 var attempts = 0; // 猜測次數
 var guessedCorrectly = false; // 猜測是否正確
+var guessHistoryNumber = []; // 猜測歷史記錄（數字）
+var guessHistoryOrder = 0; // 猜測歷史記錄（第幾次）
+var guessHistoryHint = []; // 猜測歷史紀錄（提示）
 
 // 主遊戲邏輯
 // 主遊戲進行 函式
@@ -117,6 +120,43 @@ function playGame() {
     }
 }
 
+// 保存猜測歷史記錄
+function recordHistory() {
+    // 保存猜測歷史記錄（數字）
+    const guess = $('#guessNumber').val(); // 用常數guess儲存使用者輸入的猜測
+    if (/^\d{4}$/.test(guess)) { // 只保存符合格式的猜測記錄
+        guessHistoryNumber.push(guess);
+    }
+    console.log(guessHistoryNumber);
+
+    // 保存猜測歷史記錄（提示）
+    const { A, B } = checkGuess(answer, guess);
+    if (/^\d{4}$/.test(guess)) { 
+        guessHistoryHint.push(`${A}A${B}B`);
+    }
+    console.log(guessHistoryHint);
+}
+
+// 顯示猜測歷史記錄
+function showHistory() {
+    // 顯示猜測歷史記錄（第幾次）
+    const guess = $('#guessNumber').val();
+    if (/^\d{4}$/.test(guess)) {
+        guessHistoryOrder ++;
+        $(`#num${guessHistoryOrder}`).html(`第${guessHistoryOrder}次猜測`); 
+    }
+    
+    // 顯示猜測歷史記錄（數字）
+    for(var i = 0; i < 10; i++) {
+        $(`#guessHistoryNumber${i+1}`).html(guessHistoryNumber[i]);
+    }
+
+    // 顯示猜測歷史記錄（提示）
+    for(var i = 0; i < 10; i++) {
+        $(`#guessHistoryHint${i+1}`).html(guessHistoryHint[i]);
+    }
+}
+
 // 等DOM元素都載入後，再進行動作
 $(document).ready(() => { // ES6箭頭函式
         // init();
@@ -124,7 +164,10 @@ $(document).ready(() => { // ES6箭頭函式
             evt.preventDefault();
             console.log('按到了');
             playGame();
+            recordHistory();
+            showHistory();
         })
+        
     }
 );
 
