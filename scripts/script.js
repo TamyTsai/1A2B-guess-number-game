@@ -1,3 +1,73 @@
+var guessedCorrectly = false; // 猜測是否正確，初始設為否
+var inGame = true; // 遊戲是否為進行狀態，初始設為是
+var attempts = 0; // 猜測次數
+var guessHistoryOrder = 0; // 猜測歷史記錄（第幾次）
+var guessHistoryNumber = []; // 猜測歷史記錄（數字）
+var guessHistoryHint = []; // 猜測歷史紀錄（提示）
+var answer = "" //謎底，初始為空字串
+
+// 等DOM元素都載入後，再進行動作
+$(document).ready(() => { // ES6箭頭函式
+
+    answer = generateAnswer(); // 呼叫 生成一組不重複的四位數字 函式，並將函式回傳之答案存入常數answer中
+    console.log("遊戲開始！系统已經生成一組四位不重複的數字。");
+    console.log(`謎底：${answer}`);
+
+    $('#submit').click(evt => {
+        evt.preventDefault();
+        console.log('使用者按下送出答案按鈕');
+        playGame();
+        recordHistory();
+        showHistory();
+        finishGame(); // 判斷遊戲是否結束
+        inGameOrNot(); // 根據遊戲是否結束以置換按鈕可按狀態
+    })
+
+    $('#restart').click(evt => {
+        evt.preventDefault();
+        console.log('使用者按下再來一局按鈕');
+        init();
+        clearInput();
+        clearHistoryShow();
+        resetHistory();
+        inGameOrNot();
+    });
+    
+});
+
+// 主遊戲邏輯
+// 主遊戲進行 函式
+function playGame() {
+
+    const guess = $('#guessNumber').val(); // 用常數guess儲存使用者輸入的猜測
+
+    const { A, B } = checkGuess(answer, guess); // 將幾A幾B存入A及B常數 // 內嵌函式
+    // 範例 A=1 B=2
+
+    if (/^\d{4}$/.test(guess)) { //只計算輸入符合格式（由 4 个数字组成的字符串）的猜測次數
+        attempts++; // 猜測次數+1
+    }
+    // 正則表達式
+        // ^：表示字串的開頭
+        // \d：表示一個數字字串（0-9）
+        // {4}：表示匹配前面的模式（\d）出現4次
+        // $：表示字串的結尾
+    // test() 是 JavaScript 中正则表达式对象的方法，用于测试一个字符串是否匹配给定的正则表达式。如果匹配成功，返回 true；否则返回 false。
+
+    if (guess != answer && /^\d{4}$/.test(guess)) {
+        console.log(`猜測：${guess} | 结果：${A}A${B}B`); // ES6字串與變數串接
+        $('#result').html(`猜測：${guess} | 结果：${A}A${B}B`);
+    } else if (guess == answer) {
+        guessedCorrectly = true; // 將guessedCorrectly變數值改為true
+        console.log(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
+        $('#result').html(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
+    } else {
+        console.log("輸入無效，請輸入一個四位數字。");
+        $('#result').html("輸入無效，請輸入一個四位數字。");
+    }
+
+};
+
 // 生成一組不重複的四位數字 函式
 function generateAnswer() {
     const digits = []; // 創建空陣列 // ES6 const
@@ -13,7 +83,7 @@ function generateAnswer() {
     return digits.join(''); // join() 方法會將陣列（或一個類陣列（array-like）物件）中所有的元素連接、合併成一個字串，並回傳此字串。
     // ''：表示被串接的元素間 不需要分隔符號
     // 範例："2584"
-}
+};
   
 // 比較玩家猜測和答案，回傳A和B的數量 函式
 function checkGuess(answer, guess) {
@@ -66,61 +136,9 @@ function checkGuess(answer, guess) {
 
     return { A, B };
     // 範例：1, 2
-}
+};
 
-var answer = generateAnswer(); //  呼叫 生成一組不重複的四位數字 函式，並將函式回傳之答案存入常數answer中
-// 範例 answer = "2584"
-console.log("遊戲開始！系统已經生成一組四位不重複的數字。");
-console.log(answer);
-
-// 初始化函式
-// function init() {
-//     var answer = generateAnswer(); //  呼叫 生成一組不重複的四位數字 函式，並將函式回傳之答案存入常數answer中
-//     // 範例 answer = "2584"
-//     console.log("遊戲開始！系统已經生成一組四位不重複的數字。");
-//     console.log(answer);
-// }
-
-var attempts = 0; // 猜測次數
-var guessedCorrectly = false; // 猜測是否正確
-var guessHistoryNumber = []; // 猜測歷史記錄（數字）
-var guessHistoryOrder = 0; // 猜測歷史記錄（第幾次）
-var guessHistoryHint = []; // 猜測歷史紀錄（提示）
-
-// 主遊戲邏輯
-// 主遊戲進行 函式
-function playGame() {
-
-    const guess = $('#guessNumber').val(); // 用常數guess儲存使用者輸入的猜測
-    console.log(guess);
-
-    const { A, B } = checkGuess(answer, guess); // 將幾A幾B存入A及B常數
-    // 範例 A=1 B=2
-
-    if (/^\d{4}$/.test(guess)) { //只計算輸入符合格式（由 4 个数字组成的字符串）的猜測次數
-        attempts++; // 猜測次數+1
-    }
-    // 正則表達式
-        // ^：表示字串的開頭
-        // \d：表示一個數字字串（0-9）
-        // {4}：表示匹配前面的模式（\d）出現4次
-        // $：表示字串的結尾
-    // test() 是 JavaScript 中正则表达式对象的方法，用于测试一个字符串是否匹配给定的正则表达式。如果匹配成功，返回 true；否则返回 false。
-
-    if (guess != answer && /^\d{4}$/.test(guess)) {
-        console.log(`猜測：${guess} | 结果：${A}A${B}B`); // ES6字串與變數串接
-        $('#result').html(`猜測：${guess} | 结果：${A}A${B}B`);
-    } else if (guess == answer) {
-        guessedCorrectly = true; // 將guessedCorrectly變數值改為true
-        console.log(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
-        $('#result').html(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
-    } else {
-        console.log("輸入無效，請輸入一個四位數字。");
-        $('#result').html("輸入無效，請輸入一個四位數字。");
-    }
-}
-
-// 保存猜測歷史記錄
+// 保存猜測歷史記錄 函式
 function recordHistory() {
     // 保存猜測歷史記錄（數字）
     const guess = $('#guessNumber').val(); // 用常數guess儲存使用者輸入的猜測
@@ -135,9 +153,9 @@ function recordHistory() {
         guessHistoryHint.push(`${A}A${B}B`);
     }
     console.log(guessHistoryHint);
-}
+};
 
-// 顯示猜測歷史記錄
+// 顯示猜測歷史記錄 函式
 function showHistory() {
     // 顯示猜測歷史記錄（第幾次）
     const guess = $('#guessNumber').val();
@@ -147,27 +165,79 @@ function showHistory() {
     }
     
     // 顯示猜測歷史記錄（數字）
-    for(var i = 0; i < 10; i++) {
+    for(var i = 0; i < guessHistoryNumber.length; i++) {
         $(`#guessHistoryNumber${i+1}`).html(guessHistoryNumber[i]);
     }
 
     // 顯示猜測歷史記錄（提示）
-    for(var i = 0; i < 10; i++) {
+    for(var i = 0; i < guessHistoryHint.length; i++) {
         $(`#guessHistoryHint${i+1}`).html(guessHistoryHint[i]);
     }
-}
+};
 
-// 等DOM元素都載入後，再進行動作
-$(document).ready(() => { // ES6箭頭函式
-        // init();
-        $('#submit').click(evt => {
-            evt.preventDefault();
-            console.log('按到了');
-            playGame();
-            recordHistory();
-            showHistory();
-        })
-        
+// 判斷是否更改遊戲狀態為結束 函式
+// 如果猜測正確獲勝，或猜測次數超過上限輸掉，都讓遊戲進行狀態變成false
+function finishGame() {
+    if (guessedCorrectly) {
+        inGame = false;
     }
-);
+};
+
+// 判斷是否為遊戲進行狀態，以更改畫面按鈕可按狀態 函式
+// 若遊戲進行中，則讓 送出答案按鈕可按，重新開始按鈕不可按
+// 若遊戲非進行中，則讓 送出答案按鈕不可按，重新開始按鈕可按
+function inGameOrNot() {
+    if (inGame) { // 若遊戲進行中
+        $('#submit').attr('disabled', false); // 讓 送出答案按鈕可按
+        $('#restart').attr('disabled', true); // 重新開始按鈕不可按
+    } else { // 若遊戲非進行中
+        $('#submit').attr('disabled', true); // 讓 送出答案按鈕不可按
+        $('#restart').attr('disabled', false); // 重新開始按鈕可按
+    }
+};
+
+// 清除輸入框文字 函式
+function clearInput() {
+    document.querySelector('#guessNumber').value = "";
+};
+
+// 清除頁面顯示之歷史猜測記錄 函式（根據當前之猜測記錄數量清除，故要使用在resetHistory()前面）
+function clearHistoryShow() {
+
+    // 清空猜測歷史記錄之顯示（第幾次）
+    for(var i = 0; i < guessHistoryOrder; i++) {
+        $(`#num${i+1}`).html("");
+    }
+    
+    // 清空猜測歷史記錄之顯示（數字）
+    for(var i = 0; i < guessHistoryNumber.length; i++) {
+        $(`#guessHistoryNumber${i+1}`).html("");
+    }
+    
+    // 清空猜測歷史記錄之顯示（提示）
+    for(var i = 0; i < guessHistoryHint.length; i++) {
+        $(`#guessHistoryHint${i+1}`).html("");
+    }
+};
+
+// 重置（清除）猜測記錄 函式
+function resetHistory() {
+    guessHistoryOrder = 0; // 猜測歷史記錄（第幾次）
+    guessHistoryNumber = []; // 猜測歷史記錄（數字）
+    guessHistoryHint = []; // 猜測歷史紀錄（提示）
+};
+
+// 重新開始遊戲 初始化 函式
+function init() {
+    answer = generateAnswer(); // 重新生成新答案 更新全域變數answer
+    console.log("遊戲重新開始！系统已經重新生成一組新的四位不重複的數字。");
+    console.log(`新謎底：${answer}`);
+    inGame = true;
+    guessedCorrectly = false; // 重置猜測正確性
+    attempts = 0;
+};
+
+
+
+
 

@@ -1,3 +1,15 @@
 .guessNumberGame {
     min-height: 400px;
 }
+
+/* 送出答案按鈕的不可按狀態 */
+#submit:disabled {
+    background-color: lightgray;
+    cursor: default;
+}
+
+/* 重新開始按鈕的不可按狀態 */
+#restart:disabled {
+    background-color: lightgray;
+    cursor: default;
+}
