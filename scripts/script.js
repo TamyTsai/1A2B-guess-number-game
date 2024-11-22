@@ -1,10 +1,12 @@
+// 全域變數
 var guessedCorrectly = false; // 猜測是否正確，初始設為否
 var inGame = true; // 遊戲是否為進行狀態，初始設為是
 var attempts = 0; // 猜測次數
 var guessHistoryOrder = 0; // 猜測歷史記錄（第幾次）
 var guessHistoryNumber = []; // 猜測歷史記錄（數字）
 var guessHistoryHint = []; // 猜測歷史紀錄（提示）
-var answer = "" //謎底，初始為空字串
+var answer = "" // 謎底，初始為空字串
+var limit = 10; // 遊戲猜測次數限制
 
 // 等DOM元素都載入後，再進行動作
 $(document).ready(() => { // ES6箭頭函式
@@ -19,7 +21,8 @@ $(document).ready(() => { // ES6箭頭函式
         playGame();
         recordHistory();
         showHistory();
-        finishGame(); // 判斷遊戲是否結束
+        overLimitLoss(); // 判斷是否超過猜測次數限制，輸掉遊戲
+        finishGame(); // 判斷遊戲是否結束（猜對或超過猜測次數限制）
         inGameOrNot(); // 根據遊戲是否結束以置換按鈕可按狀態
     })
 
@@ -28,6 +31,7 @@ $(document).ready(() => { // ES6箭頭函式
         console.log('使用者按下再來一局按鈕');
         init();
         clearInput();
+        clearResultShow();
         clearHistoryShow();
         resetHistory();
         inGameOrNot();
@@ -178,14 +182,12 @@ function showHistory() {
 // 判斷是否更改遊戲狀態為結束 函式
 // 如果猜測正確獲勝，或猜測次數超過上限輸掉，都讓遊戲進行狀態變成false
 function finishGame() {
-    if (guessedCorrectly) {
+    if (guessedCorrectly || attempts > limit) {
         inGame = false;
     }
 };
 
 // 判斷是否為遊戲進行狀態，以更改畫面按鈕可按狀態 函式
-// 若遊戲進行中，則讓 送出答案按鈕可按，重新開始按鈕不可按
-// 若遊戲非進行中，則讓 送出答案按鈕不可按，重新開始按鈕可按
 function inGameOrNot() {
     if (inGame) { // 若遊戲進行中
         $('#submit').attr('disabled', false); // 讓 送出答案按鈕可按
@@ -200,6 +202,11 @@ function inGameOrNot() {
 function clearInput() {
     document.querySelector('#guessNumber').value = "";
 };
+
+// 清空猜測結果顯示
+function clearResultShow() {
+    $('#result').html("");
+}
 
 // 清除頁面顯示之歷史猜測記錄 函式（根據當前之猜測記錄數量清除，故要使用在resetHistory()前面）
 function clearHistoryShow() {
@@ -236,6 +243,14 @@ function init() {
     guessedCorrectly = false; // 重置猜測正確性
     attempts = 0;
 };
+
+// 判斷猜測是否超過上限，輸掉遊戲
+function overLimitLoss() {
+    if (attempts > limit) {
+        console.log(`可惜！你未於 ${limit} 次嘗試內猜中答案：${answer}`);
+        $('#result').html(`可惜！你未於 ${limit} 次嘗試內猜中答案：${answer}`);
+    }
+}
 
 
 
