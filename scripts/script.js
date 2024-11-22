@@ -1,17 +1,19 @@
 // 全域變數
-var guessedCorrectly = false; // 猜測是否正確，初始設為否
-var inGame = true; // 遊戲是否為進行狀態，初始設為是
-var attempts = 0; // 猜測次數
-var guessHistoryOrder = 0; // 猜測歷史記錄（第幾次）
-var guessHistoryNumber = []; // 猜測歷史記錄（數字）
-var guessHistoryHint = []; // 猜測歷史紀錄（提示）
-var answer = "" // 謎底，初始為空字串
-var limit = 10; // 遊戲猜測次數限制
+let guessedCorrectly = false; // 猜測是否正確，初始設為否
+let inGame = true; // 遊戲是否為進行狀態，初始設為是
+let attempts = 0; // 猜測次數
+let guessHistoryOrder = 0; // 猜測歷史記錄（第幾次）
+let guessHistoryNumber = []; // 猜測歷史記錄（數字）
+let guessHistoryHint = []; // 猜測歷史紀錄（提示）
+let answer = "" // 謎底，初始為空字串
+let guess = "" // 使用者輸入之猜測，初始為空字串
+const limit = 10; // 遊戲猜測次數限制  // ES6 const
+// const在宣告變數時就會進行初始化，無法等到之後再賦予值，因此必定要在一開始就給予值作宣告，否則將會報錯。
 
 // 等DOM元素都載入後，再進行動作
 $(document).ready(() => { // ES6箭頭函式
 
-    answer = generateAnswer(); // 呼叫 生成一組不重複的四位數字 函式，並將函式回傳之答案存入常數answer中
+    answer = generateAnswer(); // 呼叫 生成一組不重複的四位數字 函式，並將函式回傳之答案存入answer中
     console.log("遊戲開始！系统已經生成一組四位不重複的數字。");
     console.log(`謎底：${answer}`);
 
@@ -32,8 +34,7 @@ $(document).ready(() => { // ES6箭頭函式
         init();
         clearInput();
         clearResultShow();
-        clearHistoryShow();
-        resetHistory();
+        clearHistoryAndShow();
         inGameOrNot();
     });
     
@@ -43,9 +44,11 @@ $(document).ready(() => { // ES6箭頭函式
 // 主遊戲進行 函式
 function playGame() {
 
-    const guess = $('#guessNumber').val(); // 用常數guess儲存使用者輸入的猜測
+    guess = $('#guessNumber').val(); // 用guess儲存使用者輸入的猜測
 
-    const { A, B } = checkGuess(answer, guess); // 將幾A幾B存入A及B常數 // 內嵌函式
+    const { A, B } = checkGuess(answer, guess); // 多重指定 // 內嵌函式 
+    // 將幾A幾B存入A及B常數 
+    // 在本函式的範圍中，A及B於此敘述被指定後，就不會再被重新賦值了，所以採常數
     // 範例 A=1 B=2
 
     if (isFormat(guess)) { //只計算輸入符合格式（由 4 個數字组成的字符串）的猜測次數
@@ -68,8 +71,7 @@ function playGame() {
 
 // 生成一組不重複的四位數字 函式
 function generateAnswer() {
-    const digits = []; // 創建空陣列 // ES6 const
-    // const在宣告變數時就會進行初始化，無法等到之後再賦予值，因此必定要在一開始就給予值作宣告，否則將會報錯。
+    let digits = []; // 創建空陣列
     while (digits.length < 4) { // 當陣列長度小於4時，重複執行以下程式碼
       const randomDigit = Math.floor(Math.random() * 10);
       // 隨機生成0～1的數*10=隨機生成1～10的數
@@ -86,8 +88,8 @@ function generateAnswer() {
 // 比較玩家猜測和答案，回傳A和B的數量 函式
 function checkGuess(answer, guess) {
     let A = 0, B = 0; // 初始A與B數量為0
-    const usedInAnswer = [];
-    const usedInGuess = [];
+    let usedInAnswer = [];
+    let usedInGuess = [];
 
     // 範例answer：3548
     // 範例guess：2584
@@ -127,6 +129,7 @@ function checkGuess(answer, guess) {
                     usedInAnswer.push(j); // 在usedInAnswer陣列中加入 位置被猜錯 但數字正確 的位置之索引值
                     // 範例 usedInAnswer = [1, 2, 3]
                     break; // break ：跳離(離開)目前正在執行的迴圈中。
+                    // 全部檢查完就跳離迴圈
                 }
             }
         }
@@ -138,8 +141,11 @@ function checkGuess(answer, guess) {
 
 // 保存猜測歷史記錄 函式
 function recordHistory() {
+
+    guess = $('#guessNumber').val();
+    // 為降低函式間之耦合性，提高內聚力，故即使playGame()函式中已對guess變數賦值，但本函式仍對guess變數再賦值，以提昇程式碼可擴充性
+
     // 保存猜測歷史記錄（數字）
-    const guess = $('#guessNumber').val(); // 用常數guess儲存使用者輸入的猜測
     if (isFormat(guess)) { // 只保存符合格式的猜測記錄
         guessHistoryNumber.push(guess);
     }
@@ -155,20 +161,22 @@ function recordHistory() {
 
 // 顯示猜測歷史記錄 函式
 function showHistory() {
+    guess = $('#guessNumber').val();
+    // 為降低函式間之耦合性，提高內聚力，故即使playGame()函式中已對guess變數賦值，但本函式仍對guess變數再賦值，以提昇程式碼可擴充性
+
     // 顯示猜測歷史記錄（第幾次）
-    const guess = $('#guessNumber').val();
     if (isFormat(guess)) {
         guessHistoryOrder ++;
         $(`#num${guessHistoryOrder}`).html(`第${guessHistoryOrder}次猜測`); 
     }
     
     // 顯示猜測歷史記錄（數字）
-    for(var i = 0; i < guessHistoryNumber.length; i++) {
+    for(let i = 0; i < guessHistoryNumber.length; i++) {
         $(`#guessHistoryNumber${i+1}`).html(guessHistoryNumber[i]);
     }
 
     // 顯示猜測歷史記錄（提示）
-    for(var i = 0; i < guessHistoryHint.length; i++) {
+    for(let i = 0; i < guessHistoryHint.length; i++) {
         $(`#guessHistoryHint${i+1}`).html(guessHistoryHint[i]);
     }
 };
@@ -202,23 +210,25 @@ function clearResultShow() {
     $('#result').html("");
 }
 
-// 清除頁面顯示之歷史猜測記錄 函式（根據當前之猜測記錄數量清除，故要使用在resetHistory()前面）
-function clearHistoryShow() {
+// 清除 猜測記錄 及 頁面顯示之歷史猜測記錄 函式（根據當前之猜測記錄數量清除）
+function clearHistoryAndShow() {
 
     // 清空猜測歷史記錄之顯示（第幾次）
-    for(var i = 0; i < guessHistoryOrder; i++) {
+    for(let i = 0; i < guessHistoryOrder; i++) {
         $(`#num${i+1}`).html("");
     }
     
     // 清空猜測歷史記錄之顯示（數字）
-    for(var i = 0; i < guessHistoryNumber.length; i++) {
+    for(let i = 0; i < guessHistoryNumber.length; i++) {
         $(`#guessHistoryNumber${i+1}`).html("");
     }
     
     // 清空猜測歷史記錄之顯示（提示）
-    for(var i = 0; i < guessHistoryHint.length; i++) {
+    for(let i = 0; i < guessHistoryHint.length; i++) {
         $(`#guessHistoryHint${i+1}`).html("");
     }
+
+    resetHistory(); // 重置（清除）猜測記錄
 };
 
 // 重置（清除）猜測記錄 函式
