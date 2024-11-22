@@ -13,3 +13,8 @@
     background-color: lightgray;
     cursor: default;
 }
+
+/* 預設隱藏分享遊戲結果及連結按鈕 */
+.shareButtons {
+    display: none; /* 預設隱藏 */
+}

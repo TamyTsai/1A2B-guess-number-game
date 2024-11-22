@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1A2B猜數字遊戲</title>
     <script src="https://cdn.tailwindcss.com"></script> <!-- 透過cdn引入Tailwind css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" /> <!-- 透過cdn引入fontawesome -->
     <link rel="stylesheet" href="styles/style.css"> <!-- 引入自己寫的css -->
     <script src="scripts/jquery-3.7.1.min.js"></script> <!-- 引入jQuery -->
 </head>
@@ -28,11 +29,17 @@
             <input type="submit" id="restart" value="再來一局" class="my-2 p-1 bg-yellow-300 text-xl rounded-md" disabled="true">
         </section>
         <section class="resultArea">
-            <p class="text-xl text-center">猜測結果：</p>
+            <p class="text-xl text-center font-semibold">猜測結果：</p>
             <p id="result" class="text-center m-1 h-5"></p>
         </section>
+        <section class="shareButtons text-center">
+            <span class="font-semibold">分享遊戲結果及連結：</span>
+            <button id="shareToLine"><i class="fa-brands fa-line mt-3 mb-2 p-0.5 text-green-500 bg-white rounded-md text-3xl"></i></button>
+            <button id="shareToFB"><i class="fa-brands fa-square-facebook mt-3 mb-2 p-0.5 text-sky-600 bg-white rounded-md text-3xl"></i></button>
+            <button id="copyLink"><i class="fa-solid fa-copy mt-3 mb-2 p-0.5 text-slate-500 bg-white rounded-md text-3xl"></i></button>
+        </section>
         <section class="guessHistoryArea bg-sky-200 my-2 p-2 rounded-md">
-            <p class="text-xl">歷史記錄：</p>
+            <p class="text-xl font-semibold">歷史記錄：</p>
             <section class=" grid grid-cols-3 gap-4 text-center">
                 <div class="guessHistoryOrder"></div> <!-- 以js動態生成內部標籤 -->
                 <div class="guessHistoryNumber"></div>

@@ -9,6 +9,7 @@ let answer = "" // 謎底，初始為空字串
 let guess = "" // 使用者輸入之猜測，初始為空字串
 const limit = 10; // 遊戲猜測次數限制  // ES6 const
 // const在宣告變數時就會進行初始化，無法等到之後再賦予值，因此必定要在一開始就給予值作宣告，否則將會報錯。
+const gameLink = "https://tamytsai.github.io/1A2B-guess-number-game/" // 分享用的遊戲頁面連結
 
 // 等DOM元素都載入後，再進行動作
 $(document).ready(() => { // ES6箭頭函式
@@ -17,6 +18,7 @@ $(document).ready(() => { // ES6箭頭函式
     console.log("遊戲開始！系统已經生成一組四位不重複的數字。");
     console.log(`謎底：${answer}`);
 
+    // 按下送出答案按鈕
     $('#submit').click(evt => {
         evt.preventDefault();
         console.log('使用者按下送出答案按鈕');
@@ -24,8 +26,10 @@ $(document).ready(() => { // ES6箭頭函式
         history();
         overLimitLoss(); // 判斷猜測是否在達上限次數下，仍未猜中正確答案，輸掉並結束遊戲 函式
         inGameOrNot(); // 根據遊戲是否結束以置換按鈕可按狀態
+        showShareButtons(); // 遊戲結束，顯示分享遊戲結果及連結按鈕
     })
 
+    // 按下再來一局按鈕
     $('#restart').click(evt => {
         evt.preventDefault();
         console.log('使用者按下再來一局按鈕');
@@ -34,6 +38,69 @@ $(document).ready(() => { // ES6箭頭函式
         clearResultShow();
         clearHistoryAndShow();
         inGameOrNot();
+    });
+
+    // 按下分享到LINE按鈕
+    $('#shareToLine').click(() => {
+        // 以貼文形式分享
+        // const message = encodeURIComponent(getGameResult());
+        // const lineShareUrl = `https://line.me/R/msg/text/?${message}`;
+        // window.open(lineShareUrl, '_blank');
+
+        // 以傳送訊息形式分享
+        const lineUrl = `line://msg/text/${encodeURIComponent(getGameResultWithUrl())}`;
+        // encodeURIComponent() 是 JavaScript 中用於對 URI（Uniform Resource Identifier，統一資源標識符）中的一部分進行編碼的函數。
+        // 它的主要作用是將特殊字符轉換為對應的 URI 編碼格式，以便這些字符可以安全地用於 URL 中，而不會引起語法錯誤或意外行為。
+        // 參數：str 是要編碼的字串。
+        // 返回值：返回該字串的 URI 安全版本，其中特殊字符被替換為 % 開頭的編碼。
+        // encodeURIComponent()：編碼 URL 的「單一部分」，例如查詢參數的值。對所有特殊字符進行編碼，適用於單個值。
+        // encodeURI()：編碼整個 URL，但保留對 URL 有意義的符號（如 :, /, ?, &, # 等）。保留整個 URL 結構，適用於整體 URL。
+        window.open(lineUrl, '_blank'); // 開啟新頁面或新視窗
+        // window.open('需要開啟的目標網址', '決定如何打開新頁面或視窗', 選填，設定新視窗的屬性（例如寬度、高度、是否有滾動條等）)
+        // '_blank': 在新視窗或新分頁中打開。
+        // '_self': 在當前視窗中打開（預設值）。
+        // '_parent': 在父框架中打開（如果有框架的情況）。
+        // '_top': 在最上層框架中打開（覆蓋整個視窗）。
+        // LINE 的 URL 協議（line://msg/text/...）需要呼叫 LINE App，瀏覽器會將此操作視為外部應用程式的呼叫行為。
+        // 使用 '_blank' 可以避免覆蓋當前頁面，並保留使用者的瀏覽上下文。
+        // 在行動裝置上，如果裝置已安裝 LINE App，會自動跳轉至 LINE 並顯示訊息分享頁面。
+        // 在桌面瀏覽器中，若未安裝 LINE App，可能會無法處理 line:// 的協議，需以行動裝置測試。
+    });
+
+    // 按下分享到FB按鈕
+    $('#shareToFB').click(() => {
+        // 以貼文形式分享
+        // const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(gameLink)}`;
+        // window.open(fbShareUrl, '_blank');
+        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(gameLink)}&quote=${encodeURIComponent(getGameResult())}`;
+        window.open(fbShareUrl, '_blank');
+        // u：分享的網址連結，例如 https://example.com。
+        // quote：自訂的分享文字。
+        // Facebook 有時會忽略 quote，尤其是對應的 URL（u）沒有設置正確的 Open Graph 資料。
+        // Facebook 分享時主要依賴目標網址的 Open Graph 標籤，例如 og:title、og:description 和 og:image，而非 URL 參數中的文字。
+    });
+
+    // 按下複製按鈕
+    $('#copyLink').click(() => {
+        const shareText = getGameResultWithUrl();
+        navigator.clipboard.writeText(shareText)
+            .then(() => { // 成功複製到剪貼簿的話
+                alert('遊戲結果及連結已複製到剪貼簿！'); // 就跳出提示
+            })
+            .catch(() => { // 剪貼簿複製失敗的話
+                alert('遊戲結果及連結複製失敗，請再重新操作'); // 就跳出提示
+            });
+        // 非同步
+        // 將 shareText 變數中的內容複製到使用者的剪貼簿。navigator.clipboard 是 Web API 的一部分，提供了操作剪貼簿的功能。
+        // navigator.clipboard.writeText() 需要在 HTTPS 網頁中使用，否則會因為安全原因無法正常運行。
+        // writeText() 方法接收一個字串參數，將該字串放入剪貼簿中。
+        // writeText() 返回一個 Promise 物件，這意味著它是一個非同步操作。
+        // 異步操作（如 writeText()）指的是非阻塞式的操作，即程式可以繼續執行而不會因為某個操作（如複製到剪貼簿）而停頓。
+        // Promise物件後面可以接.then() .catch()
+        // .then() 是對這個 Promise 操作的回應，當「複製操作成功完成」後，它會執行這裡的回呼函數。
+        // 在這裡，當文字成功複製到剪貼簿時，回呼函數中的 alert() 會被觸發，顯示一個彈出訊息。
+        // 沒有涉及 HTTP 請求、伺服器響應或與伺服器的通信。
+        // 只是使用了 navigator.clipboard.writeText() 來操作剪貼簿，這是一個非同步的操作，但並不需要從伺服器獲取或發送數據。所以非屬AJAX
     });
     
 });
@@ -244,6 +311,7 @@ function init() {
     inGame = true;
     guessedCorrectly = false; // 重置猜測正確性
     attempts = 0;
+    $('.shareButtons').css('display', 'none'); // 隱藏分享按鈕
 };
 
 // 清除輸入框文字 函式
@@ -287,6 +355,30 @@ function resetHistory() {
     guessHistoryHint = []; // 猜測歷史紀錄（提示）
 };
 
+// 若遊戲結束，顯示分享遊戲結果及連結按鈕 函式
+function showShareButtons() {
+    if(!inGame) {
+        $('.shareButtons').css('display', 'block');
+    }
+};
+
+// 取得遊戲結果的文字內容（帶連結）
+function getGameResultWithUrl() {
+    if (guessedCorrectly){
+        return `我花了${attempts}次就解開謎底，你可以嗎？快來挑戰：${gameLink}`;
+    } else if(attempts == limit && !guessedCorrectly) {
+        return `我花了${limit}次都沒猜到謎底，換你試試：${gameLink}`;
+    };
+};
+
+// 取得遊戲結果的文字內容（不帶連結）
+function getGameResult() {
+    if (guessedCorrectly){
+        return `我花了${attempts}次就解開謎底，你可以嗎？快來挑戰！`;
+    } else if(attempts == limit && !guessedCorrectly) {
+        return `我花了${limit}次都沒猜到謎底，換你試試！`;
+    };
+};
 
 
 
