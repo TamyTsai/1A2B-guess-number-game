@@ -21,8 +21,7 @@ $(document).ready(() => { // ES6箭頭函式
         evt.preventDefault();
         console.log('使用者按下送出答案按鈕');
         playGame();
-        recordHistory();
-        showHistory();
+        History();
         overLimitLoss(); // 判斷是否超過猜測次數限制，輸掉遊戲
         finishGame(); // 判斷遊戲是否結束（猜對或超過猜測次數限制）
         inGameOrNot(); // 根據遊戲是否結束以置換按鈕可按狀態
@@ -154,6 +153,13 @@ function isFormat(guess) {
     // test() 是 JavaScript 中正規表示式對象的方法，用於測試一個字符串是否匹配给定的正規表示式。如果匹配成功，回傳 true；否則回傳 false。
 };
 
+// 猜測歷史記錄保存、生成標籤、顯示 函式
+function History() {
+    recordHistory(); // 記錄猜測
+    createHistoryHtmlTag(); // 創建html標籤
+    showHistory(); // 將猜測填入html標籤，顯示於畫面上
+}
+
 // 保存猜測歷史記錄 函式
 function recordHistory() {
 
@@ -173,6 +179,20 @@ function recordHistory() {
     }
     console.log(guessHistoryHint);
 };
+
+// 動態生成html猜測記錄標籤 函式
+function createHistoryHtmlTag() {
+    let orderContainer = $('.guessHistoryOrder');
+    let numberContainer = $('.guessHistoryNumber');
+    let hintContainer = $('.guessHistoryHint');
+
+    // 動態生成各類別內部標籤
+    for (let i = 1; i <= guessHistoryNumber.length && i <= limit; i++) { // 根據猜測歷史記錄數量去生成標籤，但不要超過遊戲猜測次數限制
+        orderContainer.append(`<p id="num${i}"></p>`);
+        numberContainer.append(`<p id="guessHistoryNumber${i}"></p>`);
+        hintContainer.append(`<p id="guessHistoryHint${i}"></p>`);
+    }
+}
 
 // 顯示猜測歷史記錄 函式
 function showHistory() {
@@ -243,9 +263,14 @@ function clearResultShow() {
     $('#result').html("");
 }
 
-// 清除 猜測記錄 及 頁面顯示之歷史猜測記錄 函式（根據當前之猜測記錄數量清除）
+// 清除 猜測記錄 及 頁面顯示之歷史猜測記錄 函式
 function clearHistoryAndShow() {
+    clearHistoryShow(); // 清除 頁面顯示之歷史猜測記錄（根據當前之猜測記錄數量清除）
+    resetHistory(); // 重置（清除）猜測記錄
+};
 
+// 清除 頁面顯示之歷史猜測記錄 函式
+function clearHistoryShow() {
     // 清空猜測歷史記錄之顯示（第幾次）
     for(let i = 0; i < guessHistoryOrder; i++) {
         $(`#num${i+1}`).html("");
@@ -260,8 +285,6 @@ function clearHistoryAndShow() {
     for(let i = 0; i < guessHistoryHint.length; i++) {
         $(`#guessHistoryHint${i+1}`).html("");
     }
-
-    resetHistory(); // 重置（清除）猜測記錄
 };
 
 // 重置（清除）猜測記錄 函式
