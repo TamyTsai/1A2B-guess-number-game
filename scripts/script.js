@@ -48,27 +48,21 @@ function playGame() {
     const { A, B } = checkGuess(answer, guess); // 將幾A幾B存入A及B常數 // 內嵌函式
     // 範例 A=1 B=2
 
-    if (/^\d{4}$/.test(guess)) { //只計算輸入符合格式（由 4 个数字组成的字符串）的猜測次數
+    if (isFormat(guess)) { //只計算輸入符合格式（由 4 個數字组成的字符串）的猜測次數
         attempts++; // 猜測次數+1
-    }
-    // 正則表達式
-        // ^：表示字串的開頭
-        // \d：表示一個數字字串（0-9）
-        // {4}：表示匹配前面的模式（\d）出現4次
-        // $：表示字串的結尾
-    // test() 是 JavaScript 中正则表达式对象的方法，用于测试一个字符串是否匹配给定的正则表达式。如果匹配成功，返回 true；否则返回 false。
+    };
 
-    if (guess != answer && /^\d{4}$/.test(guess)) {
+    if (isFormat(guess) && guess != answer) { // 猜測符合格式下，沒猜對
         console.log(`猜測：${guess} | 结果：${A}A${B}B`); // ES6字串與變數串接
         $('#result').html(`猜測：${guess} | 结果：${A}A${B}B`);
-    } else if (guess == answer) {
+    } else if (guess == answer) { // 猜對了
         guessedCorrectly = true; // 將guessedCorrectly變數值改為true
         console.log(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
         $('#result').html(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
-    } else {
+    } else { // 猜測不符合格式
         console.log("輸入無效，請輸入一個四位數字。");
         $('#result').html("輸入無效，請輸入一個四位數字。");
-    }
+    };
 
 };
 
@@ -146,14 +140,14 @@ function checkGuess(answer, guess) {
 function recordHistory() {
     // 保存猜測歷史記錄（數字）
     const guess = $('#guessNumber').val(); // 用常數guess儲存使用者輸入的猜測
-    if (/^\d{4}$/.test(guess)) { // 只保存符合格式的猜測記錄
+    if (isFormat(guess)) { // 只保存符合格式的猜測記錄
         guessHistoryNumber.push(guess);
     }
     console.log(guessHistoryNumber);
 
     // 保存猜測歷史記錄（提示）
     const { A, B } = checkGuess(answer, guess);
-    if (/^\d{4}$/.test(guess)) { 
+    if (isFormat(guess)) { 
         guessHistoryHint.push(`${A}A${B}B`);
     }
     console.log(guessHistoryHint);
@@ -163,7 +157,7 @@ function recordHistory() {
 function showHistory() {
     // 顯示猜測歷史記錄（第幾次）
     const guess = $('#guessNumber').val();
-    if (/^\d{4}$/.test(guess)) {
+    if (isFormat(guess)) {
         guessHistoryOrder ++;
         $(`#num${guessHistoryOrder}`).html(`第${guessHistoryOrder}次猜測`); 
     }
@@ -244,14 +238,28 @@ function init() {
     attempts = 0;
 };
 
-// 判斷猜測是否超過上限，輸掉遊戲
+// 判斷猜測是否超過上限，輸掉遊戲 函式
 function overLimitLoss() {
     if (attempts > limit) {
         console.log(`可惜！你未於 ${limit} 次嘗試內猜中答案：${answer}`);
         $('#result').html(`可惜！你未於 ${limit} 次嘗試內猜中答案：${answer}`);
     }
-}
+};
 
+// 判斷玩家輸入之猜測是否符合格式 函式
+function isFormat(guess) {
+    if (/^\d{4}$/.test(guess)) { // 測試玩家輸入的猜測，是否為 四個由0-9數字字串組成的字串
+        return true;
+    } else {
+        return false;
+    };
+    // 正規表示式
+        // ^：表示字串的開頭（符合輸入字串的開始位置。如果設定了RegExp物件的Multiline屬性，^也符合「\n」或「\r」之後的位置。）
+        // \d：表示一個數字字串（0-9）（符合一個數字字元。等價於[0-9]。注意Unicode正規表示式會符合全形數字字元。）
+        // {4}：表示匹配前面的模式（\d）出現4次（n是一個非負整數。符合確定的n次。例如，「o{2}」不能符合「Bob」中的「o」，但是能符合「food」中的兩個o。）
+        // $：表示字串的結尾（符合輸入字串的結束位置。如果設定了RegExp物件的Multiline屬性，$也符合「\n」或「\r」之前的位置。）
+    // test() 是 JavaScript 中正規表示式對象的方法，用於測試一個字符串是否匹配给定的正規表示式。如果匹配成功，回傳 true；否則回傳 false。
+};
 
 
 
