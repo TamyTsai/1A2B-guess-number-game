@@ -40,6 +40,22 @@ $(document).ready(() => { // ES6箭頭函式
     
 });
 
+// 生成一組不重複的四位數字 函式
+function generateAnswer() {
+    let digits = []; // 創建空陣列
+    while (digits.length < 4) { // 當陣列長度小於4時，重複執行以下程式碼
+      const randomDigit = Math.floor(Math.random() * 10);
+      // 隨機生成0～1的數*10=隨機生成1～10的數
+      // 並無條件捨去小數點=隨機生成1～10的整數
+      if (!digits.includes(randomDigit)) { // 當digits陣列中不包含radomDigit元素時
+        digits.push(randomDigit); // 才將radomDigit放進digits陣列中
+      }
+    }
+    return digits.join(''); // join() 方法會將陣列（或一個類陣列（array-like）物件）中所有的元素連接、合併成一個字串，並回傳此字串。
+    // ''：表示被串接的元素間 不需要分隔符號
+    // 範例："2584"
+};
+
 // 主遊戲邏輯
 // 主遊戲進行 函式
 function playGame() {
@@ -69,22 +85,6 @@ function playGame() {
 
 };
 
-// 生成一組不重複的四位數字 函式
-function generateAnswer() {
-    let digits = []; // 創建空陣列
-    while (digits.length < 4) { // 當陣列長度小於4時，重複執行以下程式碼
-      const randomDigit = Math.floor(Math.random() * 10);
-      // 隨機生成0～1的數*10=隨機生成1～10的數
-      // 並無條件捨去小數點=隨機生成1～10的整數
-      if (!digits.includes(randomDigit)) { // 當digits陣列中不包含radomDigit元素時
-        digits.push(randomDigit); // 才將radomDigit放進digits陣列中
-      }
-    }
-    return digits.join(''); // join() 方法會將陣列（或一個類陣列（array-like）物件）中所有的元素連接、合併成一個字串，並回傳此字串。
-    // ''：表示被串接的元素間 不需要分隔符號
-    // 範例："2584"
-};
-  
 // 比較玩家猜測和答案，回傳A和B的數量 函式
 function checkGuess(answer, guess) {
     let A = 0, B = 0; // 初始A與B數量為0
@@ -139,6 +139,21 @@ function checkGuess(answer, guess) {
     // 範例：1, 2
 };
 
+// 判斷玩家輸入之猜測是否符合格式 函式
+function isFormat(guess) {
+    if (/^\d{4}$/.test(guess)) { // 測試玩家輸入的猜測，是否為 四個由0-9數字字串組成的字串
+        return true;
+    } else {
+        return false;
+    };
+    // 正規表示式
+        // ^：表示字串的開頭（符合輸入字串的開始位置。如果設定了RegExp物件的Multiline屬性，^也符合「\n」或「\r」之後的位置。）
+        // \d：表示一個數字字串（0-9）（符合一個數字字元。等價於[0-9]。注意Unicode正規表示式會符合全形數字字元。）
+        // {4}：表示匹配前面的模式（\d）出現4次（n是一個非負整數。符合確定的n次。例如，「o{2}」不能符合「Bob」中的「o」，但是能符合「food」中的兩個o。）
+        // $：表示字串的結尾（符合輸入字串的結束位置。如果設定了RegExp物件的Multiline屬性，$也符合「\n」或「\r」之前的位置。）
+    // test() 是 JavaScript 中正規表示式對象的方法，用於測試一個字符串是否匹配给定的正規表示式。如果匹配成功，回傳 true；否則回傳 false。
+};
+
 // 保存猜測歷史記錄 函式
 function recordHistory() {
 
@@ -181,6 +196,14 @@ function showHistory() {
     }
 };
 
+// 判斷猜測是否超過上限，輸掉遊戲 函式
+function overLimitLoss() {
+    if (attempts > limit) {
+        console.log(`可惜！你未於 ${limit} 次嘗試內猜中答案：${answer}`);
+        $('#result').html(`可惜！你未於 ${limit} 次嘗試內猜中答案：${answer}`);
+    }
+};
+
 // 判斷是否更改遊戲狀態為結束 函式
 // 如果猜測正確獲勝，或猜測次數超過上限輸掉，都讓遊戲進行狀態變成false
 function finishGame() {
@@ -198,6 +221,16 @@ function inGameOrNot() {
         $('#submit').attr('disabled', true); // 讓 送出答案按鈕不可按
         $('#restart').attr('disabled', false); // 重新開始按鈕可按
     }
+};
+
+// 重新開始遊戲 初始化 函式
+function init() {
+    answer = generateAnswer(); // 重新生成新答案 更新全域變數answer
+    console.log("遊戲重新開始！系统已經重新生成一組新的四位不重複的數字。");
+    console.log(`新謎底：${answer}`);
+    inGame = true;
+    guessedCorrectly = false; // 重置猜測正確性
+    attempts = 0;
 };
 
 // 清除輸入框文字 函式
@@ -238,38 +271,6 @@ function resetHistory() {
     guessHistoryHint = []; // 猜測歷史紀錄（提示）
 };
 
-// 重新開始遊戲 初始化 函式
-function init() {
-    answer = generateAnswer(); // 重新生成新答案 更新全域變數answer
-    console.log("遊戲重新開始！系统已經重新生成一組新的四位不重複的數字。");
-    console.log(`新謎底：${answer}`);
-    inGame = true;
-    guessedCorrectly = false; // 重置猜測正確性
-    attempts = 0;
-};
-
-// 判斷猜測是否超過上限，輸掉遊戲 函式
-function overLimitLoss() {
-    if (attempts > limit) {
-        console.log(`可惜！你未於 ${limit} 次嘗試內猜中答案：${answer}`);
-        $('#result').html(`可惜！你未於 ${limit} 次嘗試內猜中答案：${answer}`);
-    }
-};
-
-// 判斷玩家輸入之猜測是否符合格式 函式
-function isFormat(guess) {
-    if (/^\d{4}$/.test(guess)) { // 測試玩家輸入的猜測，是否為 四個由0-9數字字串組成的字串
-        return true;
-    } else {
-        return false;
-    };
-    // 正規表示式
-        // ^：表示字串的開頭（符合輸入字串的開始位置。如果設定了RegExp物件的Multiline屬性，^也符合「\n」或「\r」之後的位置。）
-        // \d：表示一個數字字串（0-9）（符合一個數字字元。等價於[0-9]。注意Unicode正規表示式會符合全形數字字元。）
-        // {4}：表示匹配前面的模式（\d）出現4次（n是一個非負整數。符合確定的n次。例如，「o{2}」不能符合「Bob」中的「o」，但是能符合「food」中的兩個o。）
-        // $：表示字串的結尾（符合輸入字串的結束位置。如果設定了RegExp物件的Multiline屬性，$也符合「\n」或「\r」之前的位置。）
-    // test() 是 JavaScript 中正規表示式對象的方法，用於測試一個字符串是否匹配给定的正規表示式。如果匹配成功，回傳 true；否則回傳 false。
-};
 
 
 
