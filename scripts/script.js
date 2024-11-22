@@ -21,9 +21,8 @@ $(document).ready(() => { // ES6箭頭函式
         evt.preventDefault();
         console.log('使用者按下送出答案按鈕');
         playGame();
-        History();
-        overLimitLoss(); // 判斷是否超過猜測次數限制，輸掉遊戲
-        finishGame(); // 判斷遊戲是否結束（猜對或超過猜測次數限制）
+        history();
+        overLimitLoss(); // 判斷猜測是否在達上限次數下，仍未猜中正確答案，輸掉並結束遊戲 函式
         inGameOrNot(); // 根據遊戲是否結束以置換按鈕可按狀態
     })
 
@@ -77,6 +76,7 @@ function playGame() {
         guessedCorrectly = true; // 將guessedCorrectly變數值改為true
         console.log(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
         $('#result').html(`恭喜！你在 ${attempts} 次嘗試後猜中了答案：${answer}`);
+        inGame = false; // 遊戲結束
     } else { // 猜測不符合格式
         console.log("輸入無效，請輸入一個四位數字。");
         $('#result').html("輸入無效，請輸入一個四位數字。");
@@ -154,7 +154,7 @@ function isFormat(guess) {
 };
 
 // 猜測歷史記錄保存、生成標籤、顯示 函式
-function History() {
+function history() {
     recordHistory(); // 記錄猜測
     createHistoryHtmlTag(); // 創建html標籤
     showHistory(); // 將猜測填入html標籤，顯示於畫面上
@@ -216,18 +216,11 @@ function showHistory() {
     }
 };
 
-// 判斷猜測是否超過上限，輸掉遊戲 函式
+// 判斷猜測是否在達上限次數下，仍未猜中正確答案，輸掉並結束遊戲 函式
 function overLimitLoss() {
-    if (attempts > limit) {
+    if (attempts == limit && !guessedCorrectly) {
         console.log(`可惜！你未於 ${limit} 次嘗試內猜中答案：${answer}`);
         $('#result').html(`可惜！你未於 ${limit} 次嘗試內猜中答案：${answer}`);
-    }
-};
-
-// 判斷是否更改遊戲狀態為結束 函式
-// 如果猜測正確獲勝，或猜測次數超過上限輸掉，都讓遊戲進行狀態變成false
-function finishGame() {
-    if (guessedCorrectly || attempts > limit) {
         inGame = false;
     }
 };
